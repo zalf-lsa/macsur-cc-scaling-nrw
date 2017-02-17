@@ -170,15 +170,11 @@ def main():
             reader.next()
             for row in reader:
                 row_col = (int(row[3]), int(row[2]))
-                #fill missing values: sceleton, bd
-                if str(row[31]) != "":
-                    sceleton = float(row[31]) / 100.0
-                elif str(row[30]) != "":
-                    sceleton = float(row[30]) / (2*100.0)
-                else:
-                    sceleton = 0
-                if str(row[32]) != "":
-                    bulkdensity = float(row[32]) * 1000
+                #skip horizons with no properties defined
+                if float(row[45]) <= 0.00001:
+                    continue
+                #avoid BD to be too low (soilT crashes)
+                bulk_d = max(600.0, float(row[32]) * 1000)
                 soil[row_col].append({
                     "depth": float(row[15]),
                     "thickness": float(row[16]),
@@ -186,12 +182,12 @@ def main():
                     "fc": float(row[45]),
                     "sat": float(row[46]),
                     "corg": float(row[34]),
-                    "bulk-density": bulkdensity, #if empty, use the value of the previous layer
+                    "bulk-density": bulk_d,
                     "sand": float(row[29]) / 100.0,
                     "clay": float(row[27]) / 100.0,
                     "ph": float(row[36]),
-                    "sceleton": sceleton
-                })                
+                    "sceleton": float(row[31]) / 100.0
+                })
             return soil
 
     soil = {
@@ -312,13 +308,13 @@ def main():
                             #    continue
                             #if soil_resolution != 25:
                             #    continue
-                            #if crop_id != "M":
+                            #if crop_id != "W":
                             #    continue
 
                             if period != "0":
-                                climate_filename = "daily_mean_P{}_GRCP_{}_RES{}_C{:04d}R{}.csv".format(period, grcp, climate_resolution, col, row)
+                                climate_filename = "daily_mean_P{}_GRCP_{}_RES{}_C0{}R{}.csv".format(period, grcp, climate_resolution, col, row)
                             else:
-                                climate_filename = "daily_mean_P{}_RES{}_C{:04d}R{}.csv".format(period, climate_resolution, col, row)
+                                climate_filename = "daily_mean_P{}_RES{}_C0{}R{}.csv".format(period, climate_resolution, col, row)
                                 
                             if LOCAL_RUN:
                                 env["pathToClimateCSV"] = LOCAL_ARCHIVE_PATH_TO_PROJECT + "Climate_data/NRW_weather_climate_change_v3/res_" + str(climate_resolution) + "/period_" + period + "/GRCP_" + grcp + "/" + climate_filename
@@ -339,7 +335,9 @@ def main():
                                                 + "|" + gcm \
                                                 + "|" + production_id
 
-                            
+                            #with open(str(row) + "-" + str(col) + ".json", "w") as _:
+                            #    _.write(json.dumps(env))
+
                             socket.send_json(env)
                             print "sent env ", i, " customId: ", env["customId"]
                             #exit()
