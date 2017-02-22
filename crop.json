@@ -44,7 +44,7 @@
                         "amount": [26, "kg N"],
                         "partition": ["ref", "fert-params", "U"]
                     },
-                    { "date": "0001-09-01", "type": "Harvest"},
+                    { "date": "0001-08-01", "type": "Harvest"},
                     { "date": "0001-09-10", "type": "TillageApplication",
                       "depth": 0.3
                     }
@@ -68,8 +68,8 @@
                         "amount": [208, "kg N"],
                         "partition": ["ref", "fert-params", "U"]
                     },
-                    { "date": "0000-10-20", "type": "Harvest"},
-                    { "date": "0000-10-30", "type": "TillageApplication",
+                    { "date": "0000-09-20", "type": "Harvest"},
+                    { "date": "0000-10-10", "type": "TillageApplication",
                       "depth": 0.3
                     }
                 ]
