@@ -1,6 +1,7 @@
   {
     "crops": {
         "SM": {
+            "is-winter-crop": false,
             "cropParams": {
                 "species": ["include-from-file", "monica-parameters/crops/maize_nrw.json"],
                 "cultivar": ["include-from-file", "monica-parameters/crops/maize/silage maize_nrw.json"]
@@ -8,6 +9,7 @@
             "residueParams": ["include-from-file", "monica-parameters/crop-residues/maize.json"]
         },
         "WW": {
+            "is-winter-crop": true,
             "cropParams": {
                 "species": ["include-from-file", "monica-parameters/crops/wheat_nrw.json"],
                 "cultivar": ["include-from-file", "monica-parameters/crops/wheat/winter wheat_nrw.json"]
@@ -44,8 +46,8 @@
                         "amount": [26, "kg N"],
                         "partition": ["ref", "fert-params", "U"]
                     },
-                    { "date": "0001-09-01", "type": "Harvest"},
-                    { "date": "0001-09-10", "type": "TillageApplication",
+                    { "date": "0001-08-01", "type": "Harvest"},
+                    { "date": "0001-09-30", "type": "TillageApplication",
                       "depth": 0.3
                     }
                 ]
@@ -68,8 +70,8 @@
                         "amount": [208, "kg N"],
                         "partition": ["ref", "fert-params", "U"]
                     },
-                    { "date": "0000-10-20", "type": "Harvest"},
-                    { "date": "0000-10-30", "type": "TillageApplication",
+                    { "date": "0000-09-20", "type": "Harvest"},
+                    { "date": "0000-09-30", "type": "TillageApplication",
                       "depth": 0.3
                     }
                 ]

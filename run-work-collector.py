@@ -7,6 +7,7 @@
 
 # Authors:
 # Michael Berg-Mohnicke <michael.berg@zalf.de>
+# Tommaso Stella <tommaso.stella@zalf.de>
 #
 # Maintainers:
 # Currently maintained by the authors.
@@ -18,7 +19,7 @@
 import sys
 #sys.path.insert(0, "C:\\Users\\berg.ZALF-AD\\GitHub\\monica\\project-files\\Win32\\Release")
 #sys.path.insert(0, "C:\\Users\\berg.ZALF-AD\\GitHub\\monica\\src\\python")
-sys.path.insert(0, "C:\\Program Files (x86)\\MONICA")
+#sys.path.insert(0, "C:\\Program Files (x86)\\MONICA")
 print sys.path
 
 import gc
@@ -26,10 +27,11 @@ import csv
 import types
 import os
 from datetime import datetime
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 
 import zmq
-#print zmq.pyzmq_version()
+print "pyzmq version: ", zmq.pyzmq_version(), " zmq version: ", zmq.zmq_version()
+
 import monica_io
 #print "path to monica_io: ", monica_io.__file__
 
@@ -76,7 +78,7 @@ def create_output(cl_res, cl_row, cl_col, s_res, s_row, s_col, crop_id, period, 
                 if vals.get("DOY", 366) < 365 or crop_id == "M":
                     year_to_vals[vals.get("Year", 0)].update(vals)
 
-        for year, vals in year_to_vals.iteritems():
+        for year, vals in OrderedDict(sorted(year_to_vals.items())).iteritems():
             if len(vals) > 0: #and (crop_id == "W" or year > 1980):
                 if cl_res <= s_res:
                     gridcell = "C" + str(cl_col) + ":R" + str(cl_row)
@@ -163,14 +165,14 @@ def collector():
 
     data = defaultdict(list)
 
-    i = 0
+    i = 1
     context = zmq.Context()
     socket = context.socket(zmq.PULL)
     socket.connect("tcp://cluster2:7777")
     socket.RCVTIMEO = 1000
     leave = False
     write_normal_output_files = False
-    start_writing_lines_threshold = 30
+    start_writing_lines_threshold = 270
     while not leave:
 
         try:

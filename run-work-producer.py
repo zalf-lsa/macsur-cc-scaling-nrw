@@ -7,6 +7,7 @@
 
 # Authors:
 # Michael Berg-Mohnicke <michael.berg@zalf.de>
+# Tommaso Stella <tommaso.stella@zalf.de>
 #
 # Maintainers:
 # Currently maintained by the authors.
@@ -29,24 +30,40 @@ import sys
 #sys.path.insert(0, "C:\\Users\\berg.ZALF-AD\\GitHub\\monica\\project-files\\Win32\\Release")
 #sys.path.insert(0, "C:\\Users\\berg.ZALF-AD\\GitHub\\monica\\project-files\\Win32\\Debug")
 #sys.path.insert(0, "C:\\Users\\berg.ZALF-AD\\GitHub\\monica\\src\\python")
-sys.path.insert(0, "C:\\Program Files (x86)\\MONICA")
+#sys.path.insert(0, "C:\\Program Files (x86)\\MONICA")
 print sys.path
 #sys.path.append('C:/Users/berg.ZALF-AD/GitHub/util/soil')
 #from soil_conversion import *
 #import monica_python
 import zmq
+print "pyzmq version: ", zmq.pyzmq_version(), " zmq version: ", zmq.zmq_version()
+
 import monica_io
 #print "path to monica_io: ", monica_io.__file__
 
-#print "pyzmq version: ", zmq.pyzmq_version()
 #print "sys.path: ", sys.path
 #print "sys.version: ", sys.version
 
-#INCLUDE_FILE_BASE_PATH = "C:/Users/stella/MONICA"
-INCLUDE_FILE_BASE_PATH = "C:/Users/stella/Documents/GitHub"
-LOCAL_ARCHIVE_PATH_TO_PROJECT = "Z:/projects/macsur-scaling-cc-nrw/"
-ARCHIVE_PATH_TO_PROJECT = "/archiv-daten/md/projects/macsur-scaling-cc-nrw/"
+USER = "berg2"
 LOCAL_RUN = False
+
+PATHS = {
+    "stella": {
+        "INCLUDE_FILE_BASE_PATH": "C:/Users/stella/Documents/GitHub",
+        "LOCAL_ARCHIVE_PATH_TO_PROJECT": "Z:/projects/macsur-scaling-cc-nrw/",
+        "ARCHIVE_PATH_TO_PROJECT": "/archiv-daten/md/projects/macsur-scaling-cc-nrw/"
+    },
+    "berg": {
+        "INCLUDE_FILE_BASE_PATH": "C:/Users/berg.ZALF-AD.000/Documents/GitHub",
+        "LOCAL_ARCHIVE_PATH_TO_PROJECT": "P:/macsur-scaling-cc-nrw/",
+        "ARCHIVE_PATH_TO_PROJECT": "/archiv-daten/md/projects/macsur-scaling-cc-nrw/"
+    },
+    "berg2": {
+        "INCLUDE_FILE_BASE_PATH": "C:/Users/berg.ZALF-AD/GitHub",
+        "LOCAL_ARCHIVE_PATH_TO_PROJECT": "P:/macsur-scaling-cc-nrw/",
+        "ARCHIVE_PATH_TO_PROJECT": "/archiv-daten/md/projects/macsur-scaling-cc-nrw/"
+    }
+}
 
 def main():
     "main"
@@ -85,7 +102,7 @@ def main():
     with open("sims.json") as _:
         sims = json.load(_)
 
-    sim["include-file-base-path"] = INCLUDE_FILE_BASE_PATH
+    sim["include-file-base-path"] = PATHS[USER]["INCLUDE_FILE_BASE_PATH"]
 
     period_gcms = [
         {"grcp": "0", "period": "0", "gcm-rcp": "0_0"},
@@ -142,7 +159,7 @@ def main():
 
             return lats
         
-    latitudes = read_latitude(LOCAL_ARCHIVE_PATH_TO_PROJECT + "Soil_data/add_x_y_lon_lat_ele_centred.csv")
+    latitudes = read_latitude(PATHS[USER]["LOCAL_ARCHIVE_PATH_TO_PROJECT"] + "Soil_data/add_x_y_lon_lat_ele_centred.csv")
 
 
     def read_lookup_file(filename): 
@@ -159,7 +176,7 @@ def main():
                   })
             return lll
 
-    lookup = read_lookup_file(LOCAL_ARCHIVE_PATH_TO_PROJECT + "/unit_description/MCSUR_NRW_CC_cell_lookup.csv")
+    lookup = read_lookup_file(PATHS[USER]["LOCAL_ARCHIVE_PATH_TO_PROJECT"] + "/unit_description/MCSUR_NRW_CC_cell_lookup.csv")
 
 
     def read_soil_properties(filename):
@@ -191,9 +208,9 @@ def main():
             return soil
 
     soil = {
-        25: read_soil_properties(LOCAL_ARCHIVE_PATH_TO_PROJECT + "Soil_data/climate_change_NRW_soil_r25.csv"),
-        50: read_soil_properties(LOCAL_ARCHIVE_PATH_TO_PROJECT + "Soil_data/climate_change_NRW_soil_r50.csv"),
-        100: read_soil_properties(LOCAL_ARCHIVE_PATH_TO_PROJECT + "Soil_data/climate_change_NRW_soil_r100.csv")
+        25: read_soil_properties(PATHS[USER]["LOCAL_ARCHIVE_PATH_TO_PROJECT"] + "Soil_data/climate_change_NRW_soil_r25.csv"),
+        50: read_soil_properties(PATHS[USER]["LOCAL_ARCHIVE_PATH_TO_PROJECT"] + "Soil_data/climate_change_NRW_soil_r50.csv"),
+        100: read_soil_properties(PATHS[USER]["LOCAL_ARCHIVE_PATH_TO_PROJECT"] + "Soil_data/climate_change_NRW_soil_r100.csv")
     }
 
 
@@ -254,7 +271,7 @@ def main():
         "PLN": {"water-response": True, "nitrogen-response": True}
     }
 
-    i = 0
+    i = 1
     start_store = time.clock()
     #start = config["start"] - 1
     #end = config["end"] - 1
@@ -263,12 +280,15 @@ def main():
 
     for c2s in climate_to_soil:
 
+        step = c2s["step"]
         climate_resolution = c2s["climate"]
         soil_resolution = c2s["soil"]
 
         climate_to_soils = defaultdict(set)
         for mmm in lookup:
             climate_to_soils[mmm[climate_resolution]].add(mmm[soil_resolution])
+
+        print "step: ", step, " ", len(climate_to_soils), " runs in climate_res: ", climate_resolution, " and soil_res: ", soil_resolution
 
         for climate_coord, soil_coords in climate_to_soils.iteritems():
 
@@ -317,9 +337,9 @@ def main():
                                 climate_filename = "daily_mean_P{}_RES{}_C0{}R{}.csv".format(period, climate_resolution, col, row)
                                 
                             if LOCAL_RUN:
-                                env["pathToClimateCSV"] = LOCAL_ARCHIVE_PATH_TO_PROJECT + "Climate_data/NRW_weather_climate_change_v3/res_" + str(climate_resolution) + "/period_" + period + "/GRCP_" + grcp + "/" + climate_filename
+                                env["pathToClimateCSV"] = PATHS[USER]["LOCAL_ARCHIVE_PATH_TO_PROJECT"] + "Climate_data/NRW_weather_climate_change_v3/res_" + str(climate_resolution) + "/period_" + period + "/GRCP_" + grcp + "/" + climate_filename
                             else:
-                                env["pathToClimateCSV"] = ARCHIVE_PATH_TO_PROJECT + "Climate_data/NRW_weather_climate_change_v3/res_" + str(climate_resolution) + "/period_" + period + "/GRCP_" + grcp + "/" + climate_filename
+                                env["pathToClimateCSV"] = PATHS[USER]["ARCHIVE_PATH_TO_PROJECT"] + "Climate_data/NRW_weather_climate_change_v3/res_" + str(climate_resolution) + "/period_" + period + "/GRCP_" + grcp + "/" + climate_filename
 
                             #initialize nitrate/ammonium in soil layers at start of simulation 
                             #for i in range(3):
@@ -335,7 +355,7 @@ def main():
                                                 + "|" + gcm \
                                                 + "|" + production_id
 
-                            #with open(str(row) + "-" + str(col) + ".json", "w") as _:
+                            #with open("envs/env-"+str(i)+".json", "w") as _:
                             #    _.write(json.dumps(env))
 
                             socket.send_json(env)
@@ -346,7 +366,7 @@ def main():
 
     stop_store = time.clock()
 
-    print "sending ", i, " envs took ", (stop_store - start_store), " seconds"
+    print "sending ", (i-1), " envs took ", (stop_store - start_store), " seconds"
     #print "ran from ", start, "/", row_cols[start], " to ", end, "/", row_cols[end]
     return
 
