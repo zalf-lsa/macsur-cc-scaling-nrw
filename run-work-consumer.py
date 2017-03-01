@@ -39,6 +39,8 @@ import monica_io
 
 #gc.enable()
 
+LOCAL_RUN = False
+
 def create_output(cl_res, cl_row, cl_col, s_res, s_row, s_col, crop_id, period, gcm, result):
     "create crop output lines"
 
@@ -160,6 +162,8 @@ def write_data(crop_id, production_situation, period, grcp, climate_resolution, 
         data[(crop_id, production_situation, period, grcp, climate_resolution, soil_resolution)] = []
 
 
+
+
 def collector():
     "collect data from workers"
 
@@ -168,7 +172,10 @@ def collector():
     i = 1
     context = zmq.Context()
     socket = context.socket(zmq.PULL)
-    socket.connect("tcp://cluster2:7777")
+    if LOCAL_RUN:
+        socket.connect("tcp://localhost:7777")
+    else:
+        socket.connect("tcp://cluster2:7777")
     socket.RCVTIMEO = 1000
     leave = False
     write_normal_output_files = False

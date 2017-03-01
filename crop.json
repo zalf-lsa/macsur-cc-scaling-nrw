@@ -3,16 +3,16 @@
         "SM": {
             "is-winter-crop": false,
             "cropParams": {
-                "species": ["include-from-file", "monica-parameters/crops/maize_nrw.json"],
-                "cultivar": ["include-from-file", "monica-parameters/crops/maize/silage maize_nrw.json"]
+                "species": ["include-from-file", "monica-parameters/projects/macsur-cc-scaling-nrw/maize.json"],
+                "cultivar": ["include-from-file", "monica-parameters/projects/macsur-cc-scaling-nrw/silage-maize.json"]
             },
             "residueParams": ["include-from-file", "monica-parameters/crop-residues/maize.json"]
         },
         "WW": {
             "is-winter-crop": true,
             "cropParams": {
-                "species": ["include-from-file", "monica-parameters/crops/wheat_nrw.json"],
-                "cultivar": ["include-from-file", "monica-parameters/crops/wheat/winter wheat_nrw.json"]
+                "species": ["include-from-file", "monica-parameters/projects/macsur-cc-scaling-nrw/wheat.json"],
+                "cultivar": ["include-from-file", "monica-parameters/projects/macsur-cc-scaling-nrw/winter-wheat.json"]
             },
             "residueParams": ["include-from-file", "monica-parameters/crop-residues/wheat.json"]
         }
@@ -82,7 +82,7 @@
     "cropRotation": ["ref", "crop-rotations", "W"],
 
     "CropParameters": {
-        "DEFAULT": ["include-from-file", "monica-parameters/user-parameters/hermes-crop.json"],
+        "DEFAULT": ["include-from-file", "monica-parameters/general/crop.json"],
         "AdjustRootDepthForSoilProps": false
     }
 }

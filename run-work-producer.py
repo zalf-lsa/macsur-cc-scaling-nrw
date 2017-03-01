@@ -69,10 +69,7 @@ def main():
     "main"
 
     context = zmq.Context()
-    if LOCAL_RUN:
-        socket = context.socket(zmq.REQ)
-    else:
-        socket = context.socket(zmq.PUSH)
+    socket = context.socket(zmq.PUSH)
     #port = 6666 if len(sys.argv) == 1 else sys.argv[1]
     config = {
         "port": 6666,
