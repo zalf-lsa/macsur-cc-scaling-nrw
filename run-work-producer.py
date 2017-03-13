@@ -255,7 +255,7 @@ def main():
         {"step": 1, "climate": 25, "soil": 25},
         {"step": 1, "climate": 25, "soil": 50},
         {"step": 1, "climate": 25, "soil": 100},
-        {"step": 2, "climate": 50, "soil": 25},
+        {"step": 2, "climate": 50, "soil": 25}
         {"step": 2, "climate": 100, "soil": 25},
         {"step": 3, "climate": 50, "soil": 50},
         {"step": 3, "climate": 100, "soil": 100}
@@ -285,14 +285,20 @@ def main():
         for mmm in lookup:
             climate_to_soils[mmm[climate_resolution]].add(mmm[soil_resolution])
 
-        print "step: ", step, " ", len(climate_to_soils), " runs in climate_res: ", climate_resolution, " and soil_res: ", soil_resolution
+        print "step: ", step, " ", sum([len(s[1]) for s in climate_to_soils.iteritems()]), " runs in climate_res: ", climate_resolution, " and soil_res: ", soil_resolution
 
-        for climate_coord, soil_coords in climate_to_soils.iteritems():
+        for (climate_row, climate_col), soil_coords in climate_to_soils.iteritems():
 
-            for row, col in soil_coords:
+            #if (climate_row, climate_col) != (6,6):
+            #    continue
+
+            for soil_row, soil_col in soil_coords:
+
+                #if (soil_row, soil_col) != (11,11):
+                #    continue
 
                 for crop_id in ["W", "M"]:
-                    rootdepth_soillimited = update_soil(soil_resolution, row, col, crop_id)
+                    rootdepth_soillimited = update_soil(soil_resolution, soil_row, soil_col, crop_id)
                     env = monica_io.create_env_json_from_json_config({
                         "crop": crop,
                         "site": site,
@@ -321,7 +327,7 @@ def main():
 
                             #if period != "0":
                             #    continue
-                            #if climate_resolution != 25:
+                            #if climate_resolution != 50:
                             #    continue
                             #if soil_resolution != 25:
                             #    continue
@@ -329,9 +335,9 @@ def main():
                             #    continue
 
                             if period != "0":
-                                climate_filename = "daily_mean_P{}_GRCP_{}_RES{}_C0{}R{}.csv".format(period, grcp, climate_resolution, col, row)
+                                climate_filename = "daily_mean_P{}_GRCP_{}_RES{}_C0{}R{}.csv".format(period, grcp, climate_resolution, climate_col, climate_row)
                             else:
-                                climate_filename = "daily_mean_P{}_RES{}_C0{}R{}.csv".format(period, climate_resolution, col, row)
+                                climate_filename = "daily_mean_P{}_RES{}_C0{}R{}.csv".format(period, climate_resolution, climate_col, climate_row)
                                 
                             if LOCAL_RUN:
                                 env["pathToClimateCSV"] = PATHS[USER]["LOCAL_ARCHIVE_PATH_TO_PROJECT"] + "Climate_data/NRW_weather_climate_change_v3/res_" + str(climate_resolution) + "/period_" + period + "/GRCP_" + grcp + "/" + climate_filename
@@ -344,9 +350,9 @@ def main():
 
                             env["customId"] = crop_id \
                                                 + "|" + str(climate_resolution) \
-                                                + "|(" + str(climate_coord[0]) + "/" + str(climate_coord[1]) + ")" \
+                                                + "|(" + str(climate_row) + "/" + str(climate_col) + ")" \
                                                 + "|" + str(soil_resolution) \
-                                                + "|(" + str(row) + "/" + str(col) + ")" \
+                                                + "|(" + str(soil_row) + "/" + str(soil_col) + ")" \
                                                 + "|" + period \
                                                 + "|" + grcp \
                                                 + "|" + gcm \

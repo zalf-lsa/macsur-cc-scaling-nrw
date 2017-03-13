@@ -26,6 +26,7 @@ import gc
 import csv
 import types
 import os
+import json
 from datetime import datetime
 from collections import defaultdict, OrderedDict
 
@@ -34,10 +35,6 @@ print "pyzmq version: ", zmq.pyzmq_version(), " zmq version: ", zmq.zmq_version(
 
 import monica_io
 #print "path to monica_io: ", monica_io.__file__
-
-#log = open("errors.txt", 'w')
-
-#gc.enable()
 
 LOCAL_RUN = False
 
@@ -114,8 +111,13 @@ def create_output(cl_res, cl_row, cl_col, s_res, s_row, s_col, crop_id, period, 
                     #vals.get("Precip-crop", "nan"),
                     #vals.get("Precip-year", "nan"),
                 ])
+    else:
+        with open("error.txt", "a") as _:
+            _.write("climate: " + str(cl_res) + "/(" + str(cl_row) + "," + str(cl_col) + "), soil: " + str(s_res) + "/(" + str(s_row) + "," + str(s_col) + "), crop_id: " + crop_id + " period: " + period + " gcm: " + gcm + "\n")
+            #_.write(json.dumps(result))
 
     return out
+
 
 #+"Stage,HeatRed,RelDev,"\
 HEADER = \
@@ -148,7 +150,7 @@ HEADER = \
 def write_data(crop_id, production_situation, period, grcp, climate_resolution, soil_resolution, data):
     "write data"
 
-    path_to_file = "out/" + crop_id + "_" + production_situation + "_P" + period + "_GRP" + grcp + "_c" + climate_resolution + "xs" + soil_resolution + ".csv"
+    path_to_file = "out/" + crop_id + "_" + production_situation + "_P" + period + "_GRP" + grcp + "_c" + str(climate_resolution) + "xs" + str(soil_resolution) + ".csv"
 
     if not os.path.isfile(path_to_file):# or (row, col) not in overwrite_list:
         with open(path_to_file, "w") as _:
@@ -207,10 +209,10 @@ def collector():
             custom_id = result["customId"]
             ci_parts = custom_id.split("|")
             crop_id = ci_parts[0]
-            climate_resolution = ci_parts[1]
+            climate_resolution = int(ci_parts[1])
             cl_row_, cl_col_ = ci_parts[2][1:-1].split("/")
             cl_row, cl_col = (int(cl_row_), int(cl_col_))
-            soil_resolution = ci_parts[3]
+            soil_resolution = int(ci_parts[3])
             s_row_, s_col_ = ci_parts[4][1:-1].split("/")
             s_row, s_col = (int(s_row_), int(s_col_))
             period = ci_parts[5]
@@ -269,4 +271,4 @@ def collector():
 
 collector()
 
-#log.close()
+
