@@ -166,7 +166,7 @@ def write_data(crop_id, production_situation, period, grcp, climate_resolution, 
 
 
 
-def collector():
+def main():
     "collect data from workers"
 
     data = defaultdict(list)
@@ -269,6 +269,6 @@ def collector():
             i = i + 1
 
 
-collector()
+main()
 
 

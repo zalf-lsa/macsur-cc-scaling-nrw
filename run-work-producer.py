@@ -255,7 +255,7 @@ def main():
         {"step": 1, "climate": 25, "soil": 25},
         {"step": 1, "climate": 25, "soil": 50},
         {"step": 1, "climate": 25, "soil": 100},
-        {"step": 2, "climate": 50, "soil": 25}
+        {"step": 2, "climate": 50, "soil": 25},
         {"step": 2, "climate": 100, "soil": 25},
         {"step": 3, "climate": 50, "soil": 50},
         {"step": 3, "climate": 100, "soil": 100}
